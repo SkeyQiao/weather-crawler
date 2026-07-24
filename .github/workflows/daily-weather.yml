@@ -1,0 +1,38 @@
+name: Daily Weather Crawler
+
+on:
+  schedule:
+    # 北京时间每天 8:30 AM = UTC 0:30 AM
+    - cron: '30 0 * * *'
+  workflow_dispatch:  # 允许手动触发
+
+permissions:
+  contents: write  # 允许自动提交数据回仓库
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run weather crawler (T+1)
+        run: python weather_crawler.py
+
+      - name: Commit data back to repo
+        run: |
+          git config user.name "weather-bot"
+          git config user.email "bot@weather.local"
+          git add weather_data.db
+          git diff --staged --quiet || git commit -m "📊 $(date +%Y-%m-%d) 天气数据更新"
+          git push

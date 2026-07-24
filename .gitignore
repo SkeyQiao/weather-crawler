@@ -1,0 +1,12 @@
+# Excel 临时文件
+*.xlsx
+
+# Python
+__pycache__/
+*.pyc
+
+# WorkBuddy 项目元数据
+.workbuddy/
+
+# macOS
+.DS_Store
